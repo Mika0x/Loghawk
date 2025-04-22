@@ -141,7 +141,7 @@ def scan_log(log_file_name, log_file, config_file):
                     print("=" * 60)
                     print(f"[ALERT] {threat_name}")
                     print(f"Log File     : {log_file_name}")
-                    print(f"Suspect      : {ip_addr}")
+                    print(f"Source      : {ip_addr}")
                     print(f"Occurrences  : {occurrences} (Threshold: {threat_threshold})")
                     print("-" * 60)
 
