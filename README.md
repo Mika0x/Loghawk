@@ -71,6 +71,40 @@ Each key in the JSON represents the name of a log file, and its value is a list 
 
 You can define multiple patterns for the same log file if you're trying to detect different types of threats within a single file.
 
+```json
+{
+  "auth.log": [
+    {
+      "threat": "SSH Brute Force",
+      "pattern": "Failed password for (?:invalid user )?.* from (?P<ip>\\d{1,3}(?:\\.\\d{1,3}){3})",
+      "threshold": 5
+    }
+  ],
+  "access.log": [
+    {
+      "threat": "Web Unauthorized Access",
+      "pattern": "HTTP/1\\.1\" 401"
+    }
+  ],
+  "system.log": [
+    {
+      "threat": "Out of Memory Error",
+      "pattern": "Out of memory: Killed process"
+    },
+    {
+      "threat": "High CPU Usage",
+      "pattern": "SYSTEM ALERT: High CPU usage detected"
+    }
+  ],
+  "app.log": [
+    {
+      "threat": "Critical System Errors",
+      "pattern": "CRITICAL|ERROR"
+    }
+  ]
+}
+```
+
 ---
 
 ## 🔎 Sample Output
