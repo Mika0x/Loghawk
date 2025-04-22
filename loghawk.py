@@ -86,7 +86,7 @@ def scan_log(log_file_name, log_file, config_file):
                           regex patterns, and optional thresholds for each log type.
 
     The function dynamically handles:
-    - Count-based threats (e.g., brute-force attacks, which require repeated pattern matches tohttps://github.com/nicholasmercurio/AllYourBase64 trigger an alert).
+    - Count-based threats (e.g., brute-force attacks, which require repeated pattern matches to trigger an alert).
     - Match-based threats (e.g., a single log line matching a pattern is enough to raise an alert).
     """
 
