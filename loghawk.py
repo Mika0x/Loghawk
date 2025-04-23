@@ -5,7 +5,6 @@ import os
 from collections import defaultdict
 
 
-
 def parse_args():
     '''
     Parses command-line arguments for the LogHawk log monitoring tool.
@@ -102,11 +101,13 @@ def scan_log(log_file_name, log_file, config_file):
     for threat in threats:
         threat_name = threat["threat"]
         threat_pattern_str = threat["pattern"]
-        threat_threshold = 0  # Default to 0 unless specified
+        threshold = 0  
+        group_by = ''
 
         # Attempt to load the threshold value (if it's a count-based threat)
         try:
-            threat_threshold = threat["threshold"]
+            threshold = threat["threshold"]
+            group_by = threat["group_by"]
         except KeyError:
             pass  # If no threshold is defined, it's treated as a match-based threat
 
@@ -114,41 +115,42 @@ def scan_log(log_file_name, log_file, config_file):
         pattern = re.compile(threat_pattern_str)
 
         # Handle count-based threats (e.g., brute-force detection)
-        if threat_threshold:
-            # Count the number of times each IP address appears matching the pattern
-            ip_addr_count = defaultdict(int)
+        if threshold:
+            # Count the number of times each grouped value (e.g., IP, endpoint, username) appears
+            grouped_value_count = defaultdict(int)
 
-            # Store evidence grouped by IP address and the corresponding line numbers
+            # Store evidence grouped by the specified field and corresponding line numbers
             evidence_list = defaultdict(dict)
 
             # Iterate through each log line and apply the regex pattern
             for line_number, line in enumerate(log_file, start=1):
                 match = pattern.search(line)
                 if match:
-                    # Extract the IP address from the regex match group
-                    ip_address = match.groupdict().get("ip")
+                    # Extract the dynamic group key (e.g., IP, endpoint, etc.) from the regex match
+                    group_value = match.groupdict().get(group_by)
 
-                    # Increment the count for this IP address
-                    ip_addr_count[ip_address] += 1
+                    # Increment the count for this group value
+                    grouped_value_count[group_value] += 1
 
-                    # Store the line as evidence under the corresponding IP and line number
-                    evidence_list[ip_address][line_number] = line.strip()
+                    # Store the line as evidence under the corresponding group value and line number
+                    evidence_list[group_value][line_number] = line.strip()
 
-            # After scanning all lines, check which IPs exceeded the defined threshold
-            for ip_addr, occurrences in ip_addr_count.items():
-                if occurrences >= threat_threshold:
-                    # Display alert and all matching log lines for that IP address
+            # After scanning all lines, check which group values exceeded the defined threshold
+            for value, occurrences in grouped_value_count.items():
+                if occurrences >= threshold:
+                    # Display alert and all matching log lines for that group value
                     print("=" * 60)
                     print(f"[ALERT] {threat_name}")
                     print(f"Log File     : {log_file_name}")
-                    print(f"Source      : {ip_addr}")
-                    print(f"Occurrences  : {occurrences} (Threshold: {threat_threshold})")
+                    print(f"Suspect      : {value}")
+                    print(f"Occurrences  : {occurrences} (Threshold: {threshold})")
                     print("-" * 60)
 
-                    for line_number, evidence in evidence_list[ip_addr].items():
+                    for line_number, evidence in evidence_list[value].items():
                         print(f"Line {line_number}: {evidence}")
 
                     print("=" * 60 + "\n")
+
 
         else:
             # For match-based threats, collect all lines that match the pattern
