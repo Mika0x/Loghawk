@@ -35,7 +35,7 @@ sudo apt-get install python
 
 - 🔎 Match-based threats — alerts on single line matches
 
-- 🔁 Threshold-based threats — tracks repeated events (like brute-force)
+- 🔁 Threshold-based threats — dynamically tracks repeated events (e.g., failed logins, repeated endpoint hits) based on grouped values like IP, endpoint, or username
 
 *All alerts will be printed directly to your terminal in a structured format.*
 
@@ -76,14 +76,17 @@ You can define multiple patterns for the same log file if you're trying to detec
   "auth.log": [
     {
       "threat": "SSH Brute Force",
-      "pattern": "Failed password for (?:invalid user )?.* from (?P<ip>\\d{1,3}(?:\\.\\d{1,3}){3})",
-      "threshold": 5
-    }
+      "pattern": "Failed password for .* from (?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)",
+      "threshold": 4,
+      "group_by": "ip"
+    }    
   ],
   "access.log": [
     {
       "threat": "Web Unauthorized Access",
-      "pattern": "HTTP/1\\.1\" 401"
+      "pattern": "HTTP/1\\.1\" 401",
+      "threshold": 3,
+      "group_by": "ip"
     }
   ],
   "system.log": [
@@ -169,9 +172,9 @@ LogHawk will now run automatically every hour, and its output will be redirected
 
 ## 📝 License
 
-LogHawk is an open-source project developed by Mika Gellizeau as part of my Lighthouse Labs bootcamp.
+LogHawk is an open-source project developed by **Mika Gellizeau** as part of my Lighthouse Labs bootcamp.
 
-You are free to use, modify, and distribute this project for personal, educational, or non-commercial purposes. However, please give appropriate credit to the author (Mika Gellizeau) when using or contributing to the project.
+You are free to use, modify, and distribute this project for personal, educational, or non-commercial purposes. However, please give appropriate credit to the author (*Mika Gellizeau*) when using or contributing to the project.
 
 This project is provided "as-is," without warranties or guarantees of any kind. Use at your own risk.
 
