@@ -84,8 +84,8 @@ You can define multiple patterns for the same log file if you're trying to detec
   "access.log": [
     {
       "threat": "Web Unauthorized Access",
-      "pattern": "HTTP/1\\.1\" 401",
-      "threshold": 3,
+      "pattern": "(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+) .* HTTP/1\\.1\" 401",
+      "threshold": 2,
       "group_by": "ip"
     }
   ],
